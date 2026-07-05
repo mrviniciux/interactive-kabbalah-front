@@ -7,64 +7,67 @@
 }
 
 :root {
-  --font-heading: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'EB Garamond', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
 
-  --bg-primary: #faf8f5;
-  --bg-secondary: #f3efe8;
-  --bg-canvas: #ece7de;
-  --text-primary: #1c1917;
-  --text-secondary: #57534e;
-  --text-muted: #a8a29e;
-  --accent: #7c5e3c;
-  --accent-hover: #5c3d1e;
-  --border: rgba(28, 25, 23, 0.08);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
-  --header-bg: #1c1917;
-  --header-text: #faf8f5;
-  --radius: 12px;
-}
-
-.dark {
-  --bg-primary: #0f0e0c;
-  --bg-secondary: #1a1815;
-  --bg-canvas: #12110f;
-  --text-primary: #f5f0e8;
-  --text-secondary: #a8a29e;
-  --text-muted: #6b6560;
-  --accent: #d4a574;
-  --accent-hover: #e8c49a;
-  --border: rgba(245, 240, 232, 0.06);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.4);
-  --header-bg: #0f0e0c;
-  --header-text: #f5f0e8;
-  --radius: 12px;
+  --color-surface: #fff9eb;
+  --color-primary: #735c00;
+  --color-primary-container: #d4af37;
+  --color-on-surface: #1e1c10;
+  --color-on-surface-variant: #4d4635;
+  --color-outline: #7f7663;
+  --color-outline-variant: #d0c5af;
+  --color-surface-container: #f4eedb;
+  --color-surface-container-low: #faf3e0;
 }
 
 body {
   font-family: var(--font-body);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  overflow: hidden;
+  background-color: var(--color-surface);
+  background-image: url("https://www.transparenttextures.com/patterns/parchment.png");
+  color: var(--color-on-surface);
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
 }
 
-body, header, div, button, select, input {
-  transition: background-color 0.3s ease, color 0.2s ease, border-color 0.3s ease;
+.sephiroth-sphere {
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 0 5px rgba(0,0,0,0.1));
+}
+.sephiroth-sphere:hover {
+  transform: scale(1.12);
+  filter: drop-shadow(0 0 20px currentColor);
 }
 
-::-webkit-scrollbar {
-  width: 6px;
+.path-line {
+  stroke-opacity: 0.55;
+  stroke-width: 6;
+  transition: stroke-opacity 0.3s, stroke-width 0.3s;
+  cursor: pointer;
 }
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+.path-line:hover {
+  stroke-opacity: 1;
+  stroke-width: 8;
 }
-::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
-  border-radius: 3px;
+
+.marginalia {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: #7f7663;
 }
+
+@keyframes scroll-unfold {
+  0% { transform: scaleY(0); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+.animate-scroll-unfold {
+  animation: scroll-unfold 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transform-origin: top;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 2px; }

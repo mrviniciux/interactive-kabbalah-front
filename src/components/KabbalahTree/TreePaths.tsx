@@ -2,49 +2,14 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { lifePaths, type LifePathDef } from '@/data/lifePaths';
 
 type Positions = Record<string, { x: number; y: number }>;
-
-interface PathDef {
-  from: string;
-  to: string;
-  number: number;
-  letter: string;
-  letterName: string;
-  sign: string;
-  arcane: string;
-  meaning: string;
-  color: string;
-  virtue: string;
-  vice: string;
-}
-
-const paths: PathDef[] = [
-  { from: 'kether', to: 'chokmah', number: 11, letter: 'א', letterName: 'Aleph', sign: '🜁', arcane: '0 - O Louco', meaning: 'Ar / Espírito', color: '#c9b800', virtue: 'Liberdade, fé no desconhecido', vice: 'Imprudência, irresponsabilidade' },
-  { from: 'kether', to: 'binah', number: 12, letter: 'ב', letterName: 'Beth', sign: '☿', arcane: 'I - O Mago', meaning: 'Mercúrio', color: '#c9b800', virtue: 'Poder de vontade, habilidade', vice: 'Manipulação, charlatanismo' },
-  { from: 'kether', to: 'tiferet', number: 13, letter: 'ג', letterName: 'Gimel', sign: '☽', arcane: 'II - A Sacerdotisa', meaning: 'Lua', color: '#3b82c4', virtue: 'Intuição, sabedoria interior', vice: 'Segredos, passividade excessiva' },
-  { from: 'chokmah', to: 'binah', number: 14, letter: 'ד', letterName: 'Daleth', sign: '♀', arcane: 'III - A Imperatriz', meaning: 'Vênus', color: '#1d7a3f', virtue: 'Fertilidade, abundância, amor', vice: 'Vaidade, possessividade' },
-  { from: 'chokmah', to: 'tiferet', number: 15, letter: 'ה', letterName: 'Heh', sign: '♈', arcane: 'IV - O Imperador', meaning: 'Áries', color: '#b52a1c', virtue: 'Autoridade, estrutura, liderança', vice: 'Tirania, rigidez' },
-  { from: 'chokmah', to: 'chesed', number: 16, letter: 'ו', letterName: 'Vav', sign: '♉', arcane: 'V - O Hierofante', meaning: 'Touro', color: '#cc7a00', virtue: 'Ensinamento, tradição sagrada', vice: 'Dogmatismo, ortodoxia cega' },
-  { from: 'binah', to: 'tiferet', number: 17, letter: 'ז', letterName: 'Zayin', sign: '♊', arcane: 'VI - Os Amantes', meaning: 'Gêmeos', color: '#cc7a00', virtue: 'Escolha consciente, união', vice: 'Indecisão, infidelidade' },
-  { from: 'binah', to: 'gevurah', number: 18, letter: 'ח', letterName: 'Cheth', sign: '♋', arcane: 'VII - O Carro', meaning: 'Câncer', color: '#cc7a00', virtue: 'Triunfo pela disciplina', vice: 'Agressividade, conquista brutal' },
-  { from: 'gevurah', to: 'chesed', number: 19, letter: 'ט', letterName: 'Teth', sign: '♌', arcane: 'VIII - A Força', meaning: 'Leão', color: '#c9b800', virtue: 'Coragem, domínio compassivo', vice: 'Crueldade, dominação' },
-  { from: 'chesed', to: 'tiferet', number: 20, letter: 'י', letterName: 'Yod', sign: '♍', arcane: 'IX - O Eremita', meaning: 'Virgem', color: '#1d7a3f', virtue: 'Sabedoria solitária, guia interior', vice: 'Isolamento, misantropia' },
-  { from: 'chesed', to: 'netzach', number: 21, letter: 'כ', letterName: 'Kaph', sign: '♃', arcane: 'X - A Roda', meaning: 'Júpiter', color: '#6b2d8b', virtue: 'Adaptação aos ciclos, sorte', vice: 'Passividade ante o destino' },
-  { from: 'gevurah', to: 'tiferet', number: 22, letter: 'ל', letterName: 'Lamed', sign: '♎', arcane: 'XI - A Justiça', meaning: 'Libra', color: '#1d7a3f', virtue: 'Equilíbrio, verdade, equidade', vice: 'Julgamento severo, frieza' },
-  { from: 'gevurah', to: 'hod', number: 23, letter: 'מ', letterName: 'Mem', sign: '🜄', arcane: 'XII - O Enforcado', meaning: 'Água', color: '#2471a3', virtue: 'Sacrifício, nova perspectiva', vice: 'Martírio, estagnação' },
-  { from: 'tiferet', to: 'netzach', number: 24, letter: 'נ', letterName: 'Nun', sign: '♏', arcane: 'XIII - A Morte', meaning: 'Escorpião', color: '#1a6b35', virtue: 'Transformação, renovação', vice: 'Apego, medo da mudança' },
-  { from: 'tiferet', to: 'yesod', number: 25, letter: 'ס', letterName: 'Samekh', sign: '♐', arcane: 'XIV - Temperança', meaning: 'Sagitário', color: '#2471a3', virtue: 'Equilíbrio, paciência, alquimia', vice: 'Extremismo, impaciência' },
-  { from: 'tiferet', to: 'hod', number: 26, letter: 'ע', letterName: 'Ayin', sign: '♑', arcane: 'XV - O Diabo', meaning: 'Capricórnio', color: '#6b2d8b', virtue: 'Humor, libertação das ilusões', vice: 'Escravidão, materialismo' },
-  { from: 'hod', to: 'netzach', number: 27, letter: 'פ', letterName: 'Peh', sign: '♂', arcane: 'XVI - A Torre', meaning: 'Marte', color: '#b52a1c', virtue: 'Destruição do falso, despertar', vice: 'Catástrofe, arrogância' },
-  { from: 'netzach', to: 'yesod', number: 28, letter: 'צ', letterName: 'Tzaddi', sign: '♒', arcane: 'XVII - A Estrela', meaning: 'Aquário', color: '#6b2d8b', virtue: 'Esperança, inspiração divina', vice: 'Desconexão, idealismo vão' },
-  { from: 'netzach', to: 'malkuth', number: 29, letter: 'ק', letterName: 'Qoph', sign: '♓', arcane: 'XVIII - A Lua', meaning: 'Peixes', color: '#cc7a00', virtue: 'Intuição, enfrentar a sombra', vice: 'Ilusão, medo, confusão' },
-  { from: 'hod', to: 'yesod', number: 30, letter: 'ר', letterName: 'Resh', sign: '☉', arcane: 'XIX - O Sol', meaning: 'Sol', color: '#cc7a00', virtue: 'Alegria, vitalidade, clareza', vice: 'Vaidade, excesso de confiança' },
-  { from: 'hod', to: 'malkuth', number: 31, letter: 'ש', letterName: 'Shin', sign: '🜂', arcane: 'XX - O Julgamento', meaning: 'Fogo', color: '#b52a1c', virtue: 'Renascimento, absolvição', vice: 'Autopunição, culpa' },
-  { from: 'yesod', to: 'malkuth', number: 32, letter: 'ת', letterName: 'Tav', sign: '♄', arcane: 'XXI - O Mundo', meaning: 'Saturno', color: '#2471a3', virtue: 'Integração, completude', vice: 'Inércia, resistência à conclusão' },
-];
+type PathDef = LifePathDef;
 
 const centralPaths = new Set([13, 25, 32]);
+
+const paths = lifePaths;
 
 interface Props {
   positions: Positions;

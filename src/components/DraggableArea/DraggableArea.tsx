@@ -12,7 +12,7 @@ export default function DraggableArea({ children }: { children: ReactNode }) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Transform state in refs (no re-renders)
-  const transform = useRef({ x: 0, y: 0, scale: 1 });
+  const transform = useRef({ x: 0, y: 0, scale: 0.42 });
   const pointers = useRef<Map<number, { x: number; y: number }>>(new Map());
   const lastPinchDist = useRef<number>(0);
   const isPanning = useRef(false);
@@ -34,6 +34,9 @@ export default function DraggableArea({ children }: { children: ReactNode }) {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+
+    // Apply initial scale
+    applyTransform();
 
     const onPointerDown = (e: PointerEvent) => {
       // Track this pointer
@@ -148,7 +151,8 @@ export default function DraggableArea({ children }: { children: ReactNode }) {
     >
       <div
         ref={contentRef}
-        style={{ transformOrigin: 'center', willChange: 'transform' }}
+        className="absolute inset-0 flex items-center justify-center"
+        style={{ transform: 'scale(0.42)', transformOrigin: 'center center', willChange: 'transform' }}
       >
         {children}
       </div>
